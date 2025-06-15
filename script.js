@@ -2,47 +2,65 @@ const USD = 4.87;
 const EUR = 5.32;
 const GBP = 6.08;
 
-const form = document.querySelector("form");
+const form = document.querySelector("form"); 
 const amount = document.getElementById("amount");
 const currency = document.getElementById("currency");
-const resultElement = document.getElementById("result"); 
 
+const footer = document.querySelector("main footer");
+const description = document.getElementById("description");
+const result = document.getElementById("result");
 
 amount.addEventListener("input", () => {
-  const numericValue = amount.value.replace(/\D+/g, "");
-  amount.value = numericValue;
+  const hasCharactersRegex = /\D+/g;
+  amount.value = amount.value.replace(hasCharactersRegex, "");
 });
 
 form.onsubmit = function (event) {
   event.preventDefault();
-
- 
-  if (!amount.value.trim()) {
-    alert("Por favor, insira um valor válido.");
-    return;
-  }
-
-  const numericAmount = parseFloat(amount.value); 
-
+  
   switch (currency.value) {
     case "USD":
-      convertCurrency(numericAmount, USD, "US$");
+      convertCurrency(amount.value, USD, "US$");
       break;
-    case "EUR":
-      convertCurrency(numericAmount, EUR, "€");
+    
+    case 'EUR':
+      convertCurrency(amount.value, EUR, "€");
       break;
-    case "GBP":
-      convertCurrency(numericAmount, GBP, "£");
+    
+    case 'GBP':
+      convertCurrency(amount.value, GBP, "£");
       break;
-    default:
-      alert("Moeda inválida.");
-  }
+  } 
 };
 
-function convertCurrency(amount, exchangeRate, symbol) {
-  const convertedValue = (amount / exchangeRate).toFixed(2); 
-  const resultText = `${symbol} ${convertedValue}`;
-  
-  console.log(resultText);  
-  resultElement.textContent = resultText; 
+function convertCurrency(amount, price, symbol) { 
+  try { 
+    
+    
+    description.textContent = `${symbol} 1 = ${formatCurrencyBRL(price)}`;
+    
+    
+    let total = parseFloat(amount) * price;
+    
+    if (isNaN(total)) {
+      return alert("Por favor, digite o valor corretamente");
+    }
+    
+    
+    result.textContent = formatCurrencyBRL(total);
+    
+    footer.classList.add("show-result");
+  } catch (error) {
+    console.log(error);
+    footer.classList.remove("show-result");
+    alert("Não foi possível converter, tente novamente");
+  }
+}
+
+
+function formatCurrencyBRL(value) {
+  return Number(value).toLocaleString("pt-BR", { 
+    style: "currency", 
+    currency: "BRL" 
+  });
 }
